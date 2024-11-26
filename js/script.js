@@ -1,4 +1,5 @@
 const POKEMON_URI = "https://pokeapi.co/api/v2/pokemon/";
+var listsOfPokemonDetailsUrls = [];
 
 document.addEventListener("DOMContentLoaded", function () {
   fetchPokemonData();
@@ -11,7 +12,21 @@ async function fetchPokemonData() {
     throw new Error(`HTTP error! Status : ${response.status}`);
   }
 
-  const pokemons = await response.json();
+  const data = await response.json();
 
-  console.log(pokemons);
+  const pokemons = data["results"];
+
+  listsOfPokemonDetailsUrls = await FetchDetailURLs(pokemons);
+
+  console.log(listsOfPokemonDetailsUrls);
+}
+
+async function FetchDetailURLs(pokemons) {
+  let list = [];
+  pokemons.forEach((pokemon) => {
+    let POKEMON_DETAILS_URL = pokemon["url"];
+    list.push(POKEMON_DETAILS_URL);
+  });
+
+  return list;
 }
