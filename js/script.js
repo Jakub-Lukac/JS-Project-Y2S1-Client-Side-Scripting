@@ -48,9 +48,14 @@ async function FetchPokemonDetails(listOfPokemonDetailsUrls) {
     let pokemonAbilitiesNames = [];
     let pokemonAbilitiesDetailURLs = [];
     let pokemonAbilitiesShortDescriptions = [];
+    let pokemonEncounterAreaURL;
+    let pokemonLocationNames = [];
 
     pokemonData["abilities"].forEach((ability) => {
       pokemonAbilitiesNames.push(ability["ability"]["name"]);
+    });
+
+    pokemonData["abilities"].forEach((ability) => {
       pokemonAbilitiesDetailURLs.push(ability["ability"]["url"]);
     });
 
@@ -63,11 +68,16 @@ async function FetchPokemonDetails(listOfPokemonDetailsUrls) {
       PokemonTypesNames.push(type["type"]["name"]);
     });
 
+    pokemonEncounterAreaURL = pokemonData["location_area_encounters"];
+
+    pokemonLocationNames = await FetchLocationsNames(pokemonEncounterAreaURL);
+
     const pokemon = {
       name: pokemonName,
       abilitiesNames: pokemonAbilitiesNames,
       abilitiesShortDescriptions: pokemonAbilitiesShortDescriptions,
       typesNames: PokemonTypesNames,
+      locationNames: pokemonLocationNames,
     };
 
     pokemonObjects.push(pokemon);
@@ -76,6 +86,25 @@ async function FetchPokemonDetails(listOfPokemonDetailsUrls) {
   console.log(pokemonObjects);
 
   //return pokemonDetails;
+}
+
+async function FetchLocationsNames(pokemonEncounterAreaURL) {
+  const response = await fetch(pokemonEncounterAreaURL);
+
+  if (!response.ok) {
+    console.error(`Failed to fetch ${detailUrl}: ${response.status}`);
+    return;
+  }
+
+  const pokemonAreaDetails = await response.json();
+
+  let locationNames = [];
+
+  pokemonAreaDetails.forEach((location) => {
+    locationNames.push(location["location_area"]["name"]);
+  });
+
+  return locationNames;
 }
 
 async function FetchAbilityDetails(pokemonAbilitiesDetailURLs) {
