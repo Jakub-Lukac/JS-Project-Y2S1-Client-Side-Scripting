@@ -73,30 +73,35 @@ function DisplayPokemonCard() {
       typeGradients[pokemon.typesNames[0]] || typeGradients.default;
     h1.style.backgroundImage = gradient;
 
-    const abilities = document.createElement("p");
-    const abilitiesStaticText = document.createElement("span");
-    abilitiesStaticText.textContent = "Abilities : ";
-    // using classList instead of setAttribute, just to showcase different ways
-    abilitiesStaticText.classList.add("static-text");
+    /************************************************************************/
+    //                          ABILITIES AND DESCRIPTION
+    /************************************************************************/
 
-    const abilitiesDynamicText = document.createElement("span");
-    abilitiesDynamicText.textContent = pokemon.abilitiesNames.join(", ");
-    abilitiesDynamicText.classList.add("dynamic-text");
-    abilities.append(abilitiesStaticText, abilitiesDynamicText);
+    const listOfAbilities = pokemon.abilitiesNames;
+    const listOfAbilitiesDescriptions = pokemon.abilitiesShortDescriptions;
 
-    const abilitiesShortDescriptions = document.createElement("p");
-    const descriptionsStaticText = document.createElement("span");
-    descriptionsStaticText.textContent = "Description : ";
-    descriptionsStaticText.classList.add("static-text");
+    const abilitiesAndDescription = document.createElement("p");
+    const abilitiesAndDescriptionStaticText = document.createElement("span");
+    abilitiesAndDescriptionStaticText.textContent =
+      "Abilities and Description : ";
+    abilitiesAndDescriptionStaticText.classList.add("static-text");
 
-    const descriptionsDynamicText = document.createElement("span");
-    descriptionsDynamicText.textContent =
-      pokemon.abilitiesShortDescriptions.join(", ");
-    descriptionsDynamicText.classList.add("dynamic-text");
-    abilitiesShortDescriptions.append(
-      descriptionsStaticText,
-      descriptionsDynamicText
-    );
+    const abilitiesAndDescriptionDynamicText = document.createElement("ul");
+    abilitiesAndDescriptionDynamicText.classList.add("dynamic-text");
+
+    for (let index = 0; index < listOfAbilities.length; index++) {
+      const listItem = document.createElement("li");
+      const listItemContent = `${listOfAbilities[index]} (${listOfAbilitiesDescriptions[index]})`;
+      listItem.textContent = listItemContent;
+      abilitiesAndDescriptionDynamicText.appendChild(listItem);
+    }
+
+    abilitiesAndDescription.appendChild(abilitiesAndDescriptionStaticText);
+    abilitiesAndDescription.appendChild(abilitiesAndDescriptionDynamicText);
+
+    /************************************************************************/
+    //                               TYPES
+    /************************************************************************/
 
     const types = document.createElement("p");
     const typesStaticText = document.createElement("span");
@@ -108,20 +113,33 @@ function DisplayPokemonCard() {
     typesDynamicText.classList.add("dynamic-text");
     types.append(typesStaticText, typesDynamicText);
 
+    /************************************************************************/
+    //                               LOCATIONS
+    /************************************************************************/
+    const locations = pokemon.locationNames;
+
     const encounterLocations = document.createElement("p");
     const locationsStaticText = document.createElement("span");
     locationsStaticText.textContent = "Encounter Locations : ";
     locationsStaticText.classList.add("static-text");
 
-    const locationsDynamicText = document.createElement("span");
-    locationsDynamicText.textContent = pokemon.locationNames.join(", ");
+    const locationsDynamicText = document.createElement("ul");
     locationsDynamicText.classList.add("dynamic-text");
-    encounterLocations.append(locationsStaticText, locationsDynamicText);
+
+    // display max 4 locations
+    for (let index = 0; index < 4; index++) {
+      const listItem = document.createElement("li");
+      const listItemContent = `${locations[index] ?? "N/A"}`; // N/A as the official endpoint does not contain any data for that location
+      listItem.textContent = listItemContent;
+      locationsDynamicText.appendChild(listItem);
+    }
+
+    encounterLocations.append(locationsStaticText);
+    encounterLocations.appendChild(locationsDynamicText);
 
     container.appendChild(card);
     card.appendChild(h1);
-    card.appendChild(abilities);
-    card.appendChild(abilitiesShortDescriptions);
+    card.appendChild(abilitiesAndDescription);
     card.appendChild(types);
     card.appendChild(encounterLocations);
   });

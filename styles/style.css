@@ -12,7 +12,6 @@ html {
 }
 
 #mainDiv {
-  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -40,6 +39,7 @@ p {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 20px;
 }
 
 .card {
@@ -49,6 +49,8 @@ p {
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.2s linear;
+  max-width: 600px;
+  width: 600px;
 }
 
 .card:hover {
