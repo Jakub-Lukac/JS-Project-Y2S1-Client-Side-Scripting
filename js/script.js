@@ -23,7 +23,7 @@ const typeGradients = {
 };
 
 const offset = 0;
-const limit = 100;
+const limit = 50;
 
 // As I have previously worked with APIs I gathered some knowledge about them
 // reponse for https://pokeapi.co/api/v2/pokemon/ , holds next page url
@@ -73,8 +73,57 @@ function DisplayPokemonCard() {
       typeGradients[pokemon.typesNames[0]] || typeGradients.default;
     h1.style.backgroundImage = gradient;
 
+    const abilities = document.createElement("p");
+    const abilitiesStaticText = document.createElement("span");
+    abilitiesStaticText.textContent = "Abilities : ";
+    // using classList instead of setAttribute, just to showcase different ways
+    abilitiesStaticText.classList.add("static-text");
+
+    const abilitiesDynamicText = document.createElement("span");
+    abilitiesDynamicText.textContent = pokemon.abilitiesNames.join(", ");
+    abilitiesDynamicText.classList.add("dynamic-text");
+    abilities.append(abilitiesStaticText, abilitiesDynamicText);
+
+    const abilitiesShortDescriptions = document.createElement("p");
+    const descriptionsStaticText = document.createElement("span");
+    descriptionsStaticText.textContent = "Description : ";
+    descriptionsStaticText.classList.add("static-text");
+
+    const descriptionsDynamicText = document.createElement("span");
+    descriptionsDynamicText.textContent =
+      pokemon.abilitiesShortDescriptions.join(", ");
+    descriptionsDynamicText.classList.add("dynamic-text");
+    abilitiesShortDescriptions.append(
+      descriptionsStaticText,
+      descriptionsDynamicText
+    );
+
+    const types = document.createElement("p");
+    const typesStaticText = document.createElement("span");
+    typesStaticText.textContent = "Types : ";
+    typesStaticText.classList.add("static-text");
+
+    const typesDynamicText = document.createElement("span");
+    typesDynamicText.textContent = pokemon.typesNames.join(", ");
+    typesDynamicText.classList.add("dynamic-text");
+    types.append(typesStaticText, typesDynamicText);
+
+    const encounterLocations = document.createElement("p");
+    const locationsStaticText = document.createElement("span");
+    locationsStaticText.textContent = "Encounter Locations : ";
+    locationsStaticText.classList.add("static-text");
+
+    const locationsDynamicText = document.createElement("span");
+    locationsDynamicText.textContent = pokemon.locationNames.join(", ");
+    locationsDynamicText.classList.add("dynamic-text");
+    encounterLocations.append(locationsStaticText, locationsDynamicText);
+
     container.appendChild(card);
     card.appendChild(h1);
+    card.appendChild(abilities);
+    card.appendChild(abilitiesShortDescriptions);
+    card.appendChild(types);
+    card.appendChild(encounterLocations);
   });
 }
 
