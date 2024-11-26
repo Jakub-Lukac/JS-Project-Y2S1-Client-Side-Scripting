@@ -1,141 +1,109 @@
 const POKEMON_URI = "https://pokeapi.co/api/v2/pokemon/";
-var listOfPokemonDetailsUrls = [];
-var listOfPokemonObjects = [];
+let listOfPokemonDetailsUrls = [];
+let listOfPokemonObjects = [];
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
   fetchPokemonData();
 });
 
+// Fetches the initial Pokémon data
 async function fetchPokemonData() {
-  const response = await fetch(POKEMON_URI);
+  try {
+    const response = await fetch(POKEMON_URI);
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! Status : ${response.status}`);
+    const data = await response.json();
+    const pokemons = data.results;
+
+    // For each pokemon, extract the url property and include it in the new array list
+    listOfPokemonDetailsUrls = pokemons.map((pokemon) => pokemon.url);
+
+    listOfPokemonObjects = await fetchPokemonDetails(listOfPokemonDetailsUrls);
+
+    console.log(listOfPokemonObjects);
+  } catch (error) {
+    console.error("Error fetching Pokémon data:", error);
   }
-
-  const data = await response.json();
-
-  const pokemons = data["results"];
-
-  listsOfPokemonDetailsUrls = await FetchDetailURLs(pokemons);
-
-  await FetchPokemonDetails(listsOfPokemonDetailsUrls);
 }
 
-async function FetchDetailURLs(pokemons) {
-  let list = [];
-  pokemons.forEach((pokemon) => {
-    let POKEMON_DETAILS_URL = pokemon["url"];
-    list.push(POKEMON_DETAILS_URL);
-  });
-
-  return list;
-}
-
-async function FetchPokemonDetails(listOfPokemonDetailsUrls) {
+// Fetch detailed Pokémon information
+async function fetchPokemonDetails(urls) {
   const pokemonObjects = [];
 
-  for (const detailUrl of listOfPokemonDetailsUrls) {
-    const response = await fetch(detailUrl);
-    if (!response.ok) {
-      console.error(`Failed to fetch ${detailUrl}: ${response.status}`);
-      continue;
+  for (const url of urls) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Failed to fetch ${url}`);
+
+      const pokemonData = await response.json();
+      const pokemon = await processPokemonData(pokemonData);
+
+      pokemonObjects.push(pokemon);
+    } catch (error) {
+      console.error(error);
     }
-    const pokemonData = await response.json();
-
-    let pokemonName = pokemonData["name"];
-
-    let pokemonAbilitiesNames = [];
-    let pokemonAbilitiesDetailURLs = [];
-    let pokemonAbilitiesShortDescriptions = [];
-    let pokemonEncounterAreaURL;
-    let pokemonLocationNames = [];
-
-    pokemonData["abilities"].forEach((ability) => {
-      pokemonAbilitiesNames.push(ability["ability"]["name"]);
-    });
-
-    pokemonData["abilities"].forEach((ability) => {
-      pokemonAbilitiesDetailURLs.push(ability["ability"]["url"]);
-    });
-
-    pokemonAbilitiesShortDescriptions = await FetchAbilityDetails(
-      pokemonAbilitiesDetailURLs
-    );
-
-    let PokemonTypesNames = [];
-    pokemonData["types"].forEach((type) => {
-      PokemonTypesNames.push(type["type"]["name"]);
-    });
-
-    pokemonEncounterAreaURL = pokemonData["location_area_encounters"];
-
-    pokemonLocationNames = await FetchLocationsNames(pokemonEncounterAreaURL);
-
-    const pokemon = {
-      name: pokemonName,
-      abilitiesNames: pokemonAbilitiesNames,
-      abilitiesShortDescriptions: pokemonAbilitiesShortDescriptions,
-      typesNames: PokemonTypesNames,
-      locationNames: pokemonLocationNames,
-    };
-
-    pokemonObjects.push(pokemon);
   }
 
-  console.log(pokemonObjects);
-
-  //return pokemonDetails;
+  return pokemonObjects;
 }
 
-async function FetchLocationsNames(pokemonEncounterAreaURL) {
-  const response = await fetch(pokemonEncounterAreaURL);
+// Process individual Pokémon data
+async function processPokemonData(pokemonData) {
+  const pokemonName = pokemonData.name;
+  const abilities = pokemonData.abilities.map((a) => a.ability);
+  const types = pokemonData.types.map((t) => t.type.name);
+  const locationURL = pokemonData.location_area_encounters;
 
-  if (!response.ok) {
-    console.error(`Failed to fetch ${detailUrl}: ${response.status}`);
-    return;
-  }
+  const abilityDescriptions = await fetchAbilityDetails(
+    abilities.map((ability) => ability.url)
+  );
 
-  const pokemonAreaDetails = await response.json();
+  const locationNames = await fetchLocationNames(locationURL);
 
-  let locationNames = [];
-
-  pokemonAreaDetails.forEach((location) => {
-    locationNames.push(location["location_area"]["name"]);
-  });
-
-  return locationNames;
+  return {
+    name: pokemonName,
+    abilitiesNames: abilities.map((a) => a.name),
+    abilitiesShortDescriptions: abilityDescriptions,
+    typesNames: types,
+    locationNames,
+  };
 }
 
-async function FetchAbilityDetails(pokemonAbilitiesDetailURLs) {
-  let listOfAbilityDescriptions = [];
-  for (const abilityDetailUrl of pokemonAbilitiesDetailURLs) {
-    const response = await fetch(abilityDetailUrl);
+// Fetch ability descriptions in English
+async function fetchAbilityDetails(urls) {
+  const descriptions = [];
 
-    if (!response.ok) {
-      console.error(`Failed to fetch ${detailUrl}: ${response.status}`);
-      continue;
+  for (const url of urls) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Failed to fetch ${url}`);
+
+      const abilityData = await response.json();
+      const englishEntry = abilityData.effect_entries.find(
+        (entry) => entry.language.name === "en"
+      );
+
+      // if the englishEntry exists, push the englishEntry.short_effect to the descriptions lists, otherwise push empty string
+      descriptions.push(englishEntry ? englishEntry.short_effect : "");
+    } catch (error) {
+      console.error(error);
+      descriptions.push(""); // Add an empty string if the fetch fails
     }
-
-    const abilityData = await response.json();
-
-    // fetch both languages as In some cases the first one is de, and second one is en, and other way around
-    let abilityDescription = abilityData["effect_entries"];
-
-    let englishAbilityShortDescription = "";
-
-    // Find the English entry
-    const englishEntry = abilityDescription.find(
-      (entry) => entry["language"]["name"] === "en"
-    );
-
-    // If found, store the short_effect
-    if (englishEntry) {
-      englishAbilityShortDescription = englishEntry["short_effect"];
-    }
-
-    listOfAbilityDescriptions.push(englishAbilityShortDescription);
   }
 
-  return listOfAbilityDescriptions;
+  return descriptions;
+}
+
+// Fetch Pokémon encounter locations
+async function fetchLocationNames(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to fetch ${url}`);
+
+    const locationData = await response.json();
+    return locationData.map((location) => location.location_area.name);
+  } catch (error) {
+    console.error(error);
+    return []; // Return an empty array if the fetch fails
+  }
 }
