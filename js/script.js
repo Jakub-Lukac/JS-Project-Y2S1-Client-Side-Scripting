@@ -1,14 +1,87 @@
-const POKEMON_URI = "https://pokeapi.co/api/v2/pokemon/";
+// Define a map of Pokémon types to gradient styles
+const typeGradients = {
+  fire: "linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%)",
+  water: "linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%)",
+  grass: "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
+  electric: "linear-gradient(120deg, #ffe259 0%, #ffa751 100%)",
+  psychic: "linear-gradient(120deg, #fbc2eb 0%, #a6c1ee 100%)",
+  rock: "linear-gradient(120deg, #d7d2cc 0%, #304352 100%)",
+  ice: "linear-gradient(120deg, #a6c9e2 0%, #c0d8e8 100%)",
+  dragon: "linear-gradient(120deg, #00c6ff 0%, #0072ff 100%)",
+  ghost: "linear-gradient(120deg, #6a4c93 0%, #d3d1e1 100%)",
+  dark: "linear-gradient(120deg, #4b4b4b 0%, #2c2c2c 100%)",
+  fairy: "linear-gradient(120deg, #f9d6f1 0%, #f8a1d5 100%)",
+  bug: "linear-gradient(120deg, #7d9a92 0%, #5e7d44 100%)",
+  normal: "linear-gradient(120deg, #a8a77d 0%, #c6d4ab 100%)",
+  fighting: "linear-gradient(120deg, #d17a6e 0%, #d87e6b 100%)",
+  flying: "linear-gradient(120deg, #a3b9e2 0%, #8a92c7 100%)",
+  poison: "linear-gradient(120deg, #aa63a4 0%, #884b94 100%)",
+  ground: "linear-gradient(120deg, #f4a261 0%, #e76f51 100%)",
+  steel: "linear-gradient(120deg, #b8b8b8 0%, #4c4c4c 100%)",
+  bug: "linear-gradient(120deg, #88b02b 0%, #7d9a92 100%)",
+  default: "linear-gradient(120deg, #fbc2eb 0%, #a6c1ee 100%)",
+};
+
+const offset = 0;
+const limit = 100;
+
+// As I have previously worked with APIs I gathered some knowledge about them
+// reponse for https://pokeapi.co/api/v2/pokemon/ , holds next page url
+// I could have done that it should repeat the fetching until it fetches all the pokemons
+// however for learning purposes I just set the offset and limit
+// so I start from the first pokemon and I retrieve 50 of them
+// these values can be easily changed
+
+const POKEMON_URI = `https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`;
 let listOfPokemonDetailsUrls = []; // global variable
 let listOfPokemonObjects = []; // global variable
 
+const app = document.getElementById("mainDiv");
+const container = document.createElement("div");
+const div = document.createElement("div");
+container.appendChild(div);
+
 // Once the content is loaded fire the fetchPokemonData function
-document.addEventListener("DOMContentLoaded", () => {
-  fetchPokemonData();
+// async function as I have to wait to fetch data and only then display cards
+document.addEventListener("DOMContentLoaded", async () => {
+  await DisplayLogo();
+  await FetchPokemonData();
+  await DisplayPokemonCard();
 });
 
+function DisplayLogo() {
+  const logo = document.createElement("img");
+  logo.src = "./images/logo.png";
+
+  container.setAttribute("class", "container");
+
+  app.appendChild(logo);
+  app.appendChild(container);
+}
+
+function DisplayPokemonCard() {
+  div.style.display = "none";
+  listOfPokemonObjects.forEach((pokemon) => {
+    const card = document.createElement("div");
+    card.setAttribute("class", "card");
+
+    const h1 = document.createElement("h1");
+    h1.textContent = pokemon.name;
+
+    // Adjusting gradient color depending on the first (main) type of pokemon
+    const gradient =
+      typeGradients[pokemon.typesNames[0]] || typeGradients.default;
+    h1.style.backgroundImage = gradient;
+
+    container.appendChild(card);
+    card.appendChild(h1);
+  });
+}
+
 // Fetches the initial Pokémon data
-async function fetchPokemonData() {
+async function FetchPokemonData() {
+  div.textContent = "Loading";
+
   try {
     const response = await fetch(POKEMON_URI);
     if (!response.ok)
@@ -31,8 +104,6 @@ async function fetchPokemonData() {
     });*/
 
     listOfPokemonObjects = await fetchPokemonDetails(listOfPokemonDetailsUrls);
-
-    console.log(listOfPokemonObjects);
   } catch (error) {
     console.error("Error fetching Pokémon data:", error);
   }
