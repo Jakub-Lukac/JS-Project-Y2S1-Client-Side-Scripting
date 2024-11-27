@@ -1,3 +1,9 @@
+/*******************************************************************************************************************/
+//   ORIGINAL FILE
+//   FROM THIS FILE I DID LOT OF REFACTORING, MAINLY TRYING TO CREATE STANDALONE FILES
+//   WHICH CLEARLY DESCRIBE SOME FEATURE OF THE OVERALL APP
+/*******************************************************************************************************************/
+
 // Define a map of Pokémon types to gradient styles
 const typeGradients = {
   fire: "linear-gradient(120deg, #ff9a9e 0%, #fecfef 100%)",
