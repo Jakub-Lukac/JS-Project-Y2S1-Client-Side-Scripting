@@ -27,7 +27,7 @@ h1 {
 img {
   display: block;
   margin: 2rem auto;
-  max-width: 20%;
+  max-width: 10%;
 }
 
 p {
@@ -66,4 +66,24 @@ p {
 .dynamic-text {
   font-style: italic;
   color: #555;
+}
+
+.loading {
+  /* creating so called modal window */
+  background-color: rgba(0, 0, 0, 0.5); /*transparent black color*/
+  width: 100%;
+  height: 100%;
+  /* display flex properties to make the content centeredS*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0; /* with position fixex, it starts in the top left corner and spans accross the whole viewport*/
+  left: 0;
+  z-index: 9999; /* makes sure that element is above everything*/
+}
+
+.loading img {
+  max-width: 100px;
+  max-height: 100px;
 }

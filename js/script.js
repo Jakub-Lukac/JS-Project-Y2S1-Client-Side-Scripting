@@ -22,8 +22,8 @@ const typeGradients = {
   default: "linear-gradient(120deg, #fbc2eb 0%, #a6c1ee 100%)",
 };
 
-const offset = 0;
-const limit = 50;
+const offset = 100;
+const limit = 300;
 
 // As I have previously worked with APIs I gathered some knowledge about them
 // reponse for https://pokeapi.co/api/v2/pokemon/ , holds next page url
@@ -38,16 +38,45 @@ let listOfPokemonObjects = []; // global variable
 
 const app = document.getElementById("mainDiv");
 const container = document.createElement("div");
-const div = document.createElement("div");
-container.appendChild(div);
 
 // Once the content is loaded fire the fetchPokemonData function
 // async function as I have to wait to fetch data and only then display cards
 document.addEventListener("DOMContentLoaded", async () => {
-  await DisplayLogo();
-  await FetchPokemonData();
-  await DisplayPokemonCard();
+  showLoadingSpinner(app);
+
+  try {
+    await DisplayLogo();
+    await FetchPokemonData();
+
+    // the cards (DOM elements) are creared in the memory
+    // once we fetch all the data only then JS updates the DOM
+    await DisplayPokemonCard();
+  } finally {
+    // Hide loading spinner once content is loaded
+    hideLoadingSpinner();
+  }
 });
+
+function showLoadingSpinner(container) {
+  const loadingDiv = document.createElement("div");
+  loadingDiv.id = "loadingDiv";
+  loadingDiv.classList.add("loading");
+
+  const loadingImg = document.createElement("img");
+  loadingImg.id = "loadingImg";
+  loadingImg.src = "./images/loading.gif";
+
+  loadingDiv.appendChild(loadingImg);
+  container.appendChild(loadingDiv);
+}
+
+// Create a reusable function for hiding the loading spinner
+function hideLoadingSpinner() {
+  const loadingDiv = document.getElementById("loadingDiv");
+  if (loadingDiv) {
+    loadingDiv.remove();
+  }
+}
 
 function DisplayLogo() {
   const logo = document.createElement("img");
@@ -60,7 +89,6 @@ function DisplayLogo() {
 }
 
 function DisplayPokemonCard() {
-  div.style.display = "none";
   listOfPokemonObjects.forEach((pokemon) => {
     const card = document.createElement("div");
     card.setAttribute("class", "card");
@@ -147,8 +175,6 @@ function DisplayPokemonCard() {
 
 // Fetches the initial Pokémon data
 async function FetchPokemonData() {
-  div.textContent = "Loading";
-
   try {
     const response = await fetch(POKEMON_URI);
     if (!response.ok)
