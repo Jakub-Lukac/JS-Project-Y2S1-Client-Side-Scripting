@@ -22,8 +22,8 @@ This project is a JavaScript-based web application that fetches Pokémon data fr
 
       - Global Variables:
 
-        selectedTypes: Stores the Pokémon types selected by the user for filtering.
-        listOfPokemonObjects: Contains the fetched and processed Pokémon objects.
+        - selectedTypes: Stores the Pokémon types selected by the user for filtering.
+        - listOfPokemonObjects: Contains the fetched and processed Pokémon objects.
 
       - DOM Manipulation:
 
