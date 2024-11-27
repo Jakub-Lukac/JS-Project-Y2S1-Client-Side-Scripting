@@ -23,7 +23,7 @@ const typeGradients = {
 };
 
 const offset = 0;
-const limit = 50;
+const limit = 500;
 
 // As I have previously worked with APIs I gathered some knowledge about them
 // reponse for https://pokeapi.co/api/v2/pokemon/ , holds next page url
@@ -31,6 +31,10 @@ const limit = 50;
 // however for learning purposes I just set the offset and limit
 // so I start from the first pokemon and I retrieve 50 of them
 // these values can be easily changed
+
+/*******************************************************************************************************************/
+//                                        VARIABLES AND ELEMENETS DECLARATION
+/*******************************************************************************************************************/
 
 const POKEMON_URI = `https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`;
 let listOfPokemonDetailsUrls = []; // global variable
@@ -43,6 +47,10 @@ const inputContainer = document.createElement("div");
 inputContainer.id = "inputContainer";
 app.appendChild(inputContainer);
 app.appendChild(container);
+
+/*******************************************************************************************************************/
+//                                            MAIN METHOD
+/*******************************************************************************************************************/
 
 // Once the content is loaded fire the fetchPokemonData function
 // async function as I have to wait to fetch data and only then display cards
@@ -68,6 +76,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         } finally {
           // Hide loading spinner once content is loaded
           hideLoadingSpinner();
+
+          // once everything is done loading, we clear selected type, for next fetching
+          selectedTypes = [];
         }
       },
       false
@@ -76,6 +87,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Error fetching Pokémon data:", error);
   }
 });
+
+/*******************************************************************************************************************/
+//                                       LOADNING SPINNER LOGIC
+/*******************************************************************************************************************/
 
 function showLoadingSpinner(container) {
   const loadingDiv = document.createElement("div");
@@ -97,6 +112,10 @@ function hideLoadingSpinner() {
     loadingDiv.remove();
   }
 }
+
+/*******************************************************************************************************************/
+//                                        DISPLAYING LOGO AND CHECKBOXES
+/*******************************************************************************************************************/
 
 function DisplayLogo() {
   const logo = document.getElementById("logo");
@@ -152,6 +171,10 @@ function DisplayInputFields() {
   container.appendChild(btn);
 }
 
+/*******************************************************************************************************************/
+//                                        FILTERS - GET USER INPUT (CHECKBOXES)
+/*******************************************************************************************************************/
+
 async function GetFilters() {
   const checkboxes = document.querySelectorAll('input[type="checkbox"]');
   for (let i = 0; i < checkboxes.length; i++) {
@@ -163,7 +186,15 @@ async function GetFilters() {
   console.log(selectedTypes);
 }
 
+/*******************************************************************************************************************/
+//                                             CREATING POKEMON CARDS
+/*******************************************************************************************************************/
+
 function DisplayPokemonCard() {
+  console.log(selectedTypes);
+  container.innerHTML = "";
+  // clear innerHTML/ content of container which holds pokemon cards, every time DisplayPokemonCard() is called
+
   // when we use filter our list/array of pokemons may look like this:
   // 50() [null,null,null, {}, {}, {}, null, ...]
   // the null values are pokemons who do not match our selected filters
@@ -258,6 +289,10 @@ function DisplayPokemonCard() {
     card.appendChild(encounterLocations);
   });
 }
+
+/*******************************************************************************************************************/
+//                           FETCHING POKEMON DATA (POKEMONS, DETAILS, ABILITIES, LOCATION)
+/*******************************************************************************************************************/
 
 // Fetches the initial Pokémon data
 async function FetchPokemonData() {
