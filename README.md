@@ -16,7 +16,7 @@ This project is a **JavaScript-based web application that fetches Pokémon data 
 
 1.  **app.js**
 
-    This file serves as the entry point of the application. It initializes the main functionality, sets up event listeners, and coordinates the workflow between different modules.
+    This file serves as the entry point of the application. It initializes the **main functionality, sets up event listeners, and coordinates the workflow between different modules.**
 
     - Key Functionalities:
 
@@ -27,7 +27,7 @@ This project is a **JavaScript-based web application that fetches Pokémon data 
 
       - DOM Manipulation:
 
-        - Creates and appends main containers to the #mainDiv.
+        - Creates and appends main containers to the **#mainDiv**.
 
       - Event Listener:
 
@@ -46,27 +46,27 @@ This project is a **JavaScript-based web application that fetches Pokémon data 
 
       - Fetching Pokémon Data:
 
-        - Uses the POKEMON_URI endpoint to fetch a list of Pokémon.
+        - Uses the **POKEMON_URI** endpoint to fetch a list of Pokémon.
         - Extracts detailed Pokémon URLs for further processing.
 
       - Fetching Pokémon Details:
 
         - Fetches individual Pokémon details (name, abilities, types, etc.).
-        - Utilizes ProcessPokemonData from dataProcessing.js to structure and filter data.
+        - Utilizes **ProcessPokemonData from dataProcessing.js** to structure and filter data.
 
       - Error Handling:
         Logs errors during API calls and ensures the application doesn't crash on failures.
 
 3.  **filters.js**
 
-    Defines constants and functions for filtering Pokémon based on their types.
+    Defines **constants** and functions for filtering Pokémon based on their types.
 
     - Key Functionalities:
 
       - Constants:
 
-        - typeGradients: Maps Pokémon types to their respective gradient styles for visual representation.
-        - API_FILTERS: Defines the offset and limit for Pokémon fetching from the API.
+        - typeGradients: **Maps Pokémon types to their respective gradient styles for visual representation.**
+        - API_FILTERS: Defines the **offset** and **limit** for Pokémon fetching from the **API**.
 
       - Filtering Logic:
 
@@ -85,16 +85,16 @@ This project is a **JavaScript-based web application that fetches Pokémon data 
 
       - Fetching Additional Data:
 
-        - Retrieves English descriptions of Pokémon abilities.
+        - Retrieves **English descriptions** of Pokémon abilities.
         - Fetches Pokémon encounter locations using a separate API endpoint.
 
       - Error Handling:
 
-        - Ensures data integrity and provides fallbacks when certain data (e.g., locations) is unavailable.
+        - Ensures data integrity and **provides fallbacks when certain data (e.g., locations) is unavailable.**
 
 5.  **ui.js**
 
-    Handles all DOM-related tasks, including displaying Pokémon data and visual elements.
+    Handles all **DOM-related tasks**, including displaying Pokémon data and visual elements.
 
     - Key Functionalities:
 
@@ -105,7 +105,7 @@ This project is a **JavaScript-based web application that fetches Pokémon data 
       - Display Functions:
 
         - DisplayLogo: Adds the Pokémon logo to the page.
-        - DisplayInputFields: Dynamically generates type filter checkboxes and the "Start Fetching Data" button.
+        - DisplayInputFields: Dynamically generates type filter checkboxes and the **"Start Fetching Data"** button.
         - DisplayPokemonCard: Creates and appends Pokémon cards with detailed information (abilities, types, locations) to the page.
 
 # Interconnection Between Files

@@ -39,6 +39,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     document.getElementById("filterBtn").addEventListener(
       "click",
+      // anonymous function (function with no name) has to be marked as async
+      // otherwise I would not be able to use await keyword, which is vital in this case
+      // as I want to start fetching data once I know what filters to use
       async () => {
         try {
           showLoadingSpinner();
