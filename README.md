@@ -1,5 +1,7 @@
 # JS-Project-Y2S1-Client-Side-Scripting
 
+JavaScript-based project - Year 2 Semester 1 - Client-Side Scripting (COMP06243)
+
 # Project Overview
 
 This project is a **JavaScript-based web application that fetches Pokémon data from the PokéAPI and displays it dynamically in the browser**. The application allows users to filter Pokémon by type using checkboxes and displays detailed Pokémon information such as abilities, types, and encounter locations in a visually appealing card format.
