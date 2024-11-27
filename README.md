@@ -100,7 +100,7 @@ This project is a **JavaScript-based web application that fetches Pokémon data 
 
       - Loading Spinner:
 
-        - showLoadingSpinner and hideLoadingSpinner: Display and hide a loading indicator during data fetching.
+        - **showLoadingSpinner and hideLoadingSpinner: Display and hide a loading indicator during data fetching.**
 
       - Display Functions:
 
