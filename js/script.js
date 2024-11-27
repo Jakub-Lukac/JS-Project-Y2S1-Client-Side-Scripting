@@ -38,6 +38,10 @@ let listOfPokemonObjects = []; // global variable
 
 const app = document.getElementById("mainDiv");
 const container = document.createElement("div");
+const inputContainer = document.createElement("div");
+inputContainer.id = "inputContainer";
+app.appendChild(inputContainer);
+app.appendChild(container);
 
 // Once the content is loaded fire the fetchPokemonData function
 // async function as I have to wait to fetch data and only then display cards
@@ -46,6 +50,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   try {
     await DisplayLogo();
+
+    await DisplayInputFields();
+
     await FetchPokemonData();
 
     // the cards (DOM elements) are creared in the memory
@@ -79,13 +86,42 @@ function hideLoadingSpinner() {
 }
 
 function DisplayLogo() {
-  const logo = document.createElement("img");
+  const logo = document.getElementById("logo");
   logo.src = "./images/logo.png";
 
   container.setAttribute("class", "container");
+}
 
-  app.appendChild(logo);
-  app.appendChild(container);
+function DisplayInputFields() {
+  const container = document.getElementById("inputContainer");
+
+  for (const [key, gradient] of Object.entries(typeGradients)) {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("wrapper");
+
+    // Create the radio button
+    const radioButton = document.createElement("input");
+    radioButton.type = "radio";
+    radioButton.name = "typeGradient"; // Same name for grouping so I can use ElementsGetByName later on
+    radioButton.value = key; // The key of the map as the value (fire, grass, ...)
+    radioButton.id = `radio-${key}`;
+
+    // Create the label for the radio button
+    const label = document.createElement("label");
+    label.classList.add("radioLabel");
+    label.htmlFor = `radio-${key}`;
+
+    // Capitalizing key for display
+    label.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+    label.style.backgroundImage = gradient;
+
+    // Append the radio button and label to the wrapper
+    wrapper.appendChild(radioButton);
+    wrapper.appendChild(label);
+
+    // Append wrapper to the inputContainer (container)
+    container.appendChild(wrapper);
+  }
 }
 
 function DisplayPokemonCard() {
