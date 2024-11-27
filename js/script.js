@@ -22,8 +22,8 @@ const typeGradients = {
   default: "linear-gradient(120deg, #fbc2eb 0%, #a6c1ee 100%)",
 };
 
-const offset = 100;
-const limit = 300;
+const offset = 0;
+const limit = 50;
 
 // As I have previously worked with APIs I gathered some knowledge about them
 // reponse for https://pokeapi.co/api/v2/pokemon/ , holds next page url
@@ -35,7 +35,7 @@ const limit = 300;
 const POKEMON_URI = `https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`;
 let listOfPokemonDetailsUrls = []; // global variable
 let listOfPokemonObjects = []; // global variable
-let listOfTypesFilters = [];
+let selectedTypes = [];
 
 const app = document.getElementById("mainDiv");
 const container = document.createElement("div");
@@ -57,6 +57,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       async () => {
         try {
           showLoadingSpinner(app);
+
+          // get the filter from user input (checkboxes), only then start fetching data
+          await GetFilters();
 
           await FetchPokemonData();
           // the cards (DOM elements) are creared in the memory
@@ -113,24 +116,24 @@ function DisplayInputFields() {
     const wrapper = document.createElement("div");
     wrapper.classList.add("wrapper");
 
-    // Create the radio button
-    const radioButton = document.createElement("input");
-    radioButton.type = "radio";
-    radioButton.name = "typeGradient"; // Same name for grouping so I can use ElementsGetByName later on
-    radioButton.value = key; // The key of the map as the value (fire, grass, ...)
-    radioButton.id = `radio-${key}`;
+    // Create the checkbox button
+    const checkBox = document.createElement("input");
+    checkBox.type = "checkbox";
+    checkBox.name = "typeGradient"; // Same name for grouping so I can use ElementsGetByName later on
+    checkBox.value = key; // The key of the map as the value (fire, grass, ...)
+    checkBox.id = `cb-${key}`;
 
-    // Create the label for the radio button
+    // Create the label for the checkbox button
     const label = document.createElement("label");
-    label.classList.add("radioLabel");
-    label.htmlFor = `radio-${key}`;
+    label.classList.add("checkBoxLabel");
+    label.htmlFor = `cb-${key}`;
 
     // Capitalizing key for display
     label.textContent = key.charAt(0).toUpperCase() + key.slice(1);
     label.style.backgroundImage = gradient;
 
-    // Append the radio button and label to the wrapper
-    wrapper.appendChild(radioButton);
+    // Append the checkbox button and label to the wrapper
+    wrapper.appendChild(checkBox);
     wrapper.appendChild(label);
 
     // Append wrapper to the inputContainer (container)
@@ -143,18 +146,36 @@ function DisplayInputFields() {
   const btn = document.createElement("button");
   btn.id = "filterBtn";
   btn.type = "button";
-  btn.style.cursor = "pointer";
-  btn.textContent = "Start fetching data";
-  btn.style.padding = "20px";
-  btn.style.borderRadius = "8px";
-  btn.style.color = "white";
-  btn.style.backgroundColor = "grey";
+  btn.textContent = "Start Fetching Data";
 
+  // Append the button to the container
   container.appendChild(btn);
 }
 
+async function GetFilters() {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  for (let i = 0; i < checkboxes.length; i++) {
+    if (checkboxes[i].checked) {
+      selectedTypes.push(checkboxes[i].value); // selectedTypes is global variable
+    }
+  }
+
+  console.log(selectedTypes);
+}
+
 function DisplayPokemonCard() {
-  listOfPokemonObjects.forEach((pokemon) => {
+  // when we use filter our list/array of pokemons may look like this:
+  // 50() [null,null,null, {}, {}, {}, null, ...]
+  // the null values are pokemons who do not match our selected filters
+  // hence we need to filter those pokemons
+
+  const validPokemonObjects = listOfPokemonObjects.filter(
+    (pokemon) => pokemon !== null
+  );
+
+  console.log(validPokemonObjects);
+
+  validPokemonObjects.forEach((pokemon) => {
     const card = document.createElement("div");
     card.setAttribute("class", "card");
 
@@ -261,14 +282,14 @@ async function FetchPokemonData() {
       list.push(POKEMON_DETAILS_URL);
     });*/
 
-    listOfPokemonObjects = await fetchPokemonDetails(listOfPokemonDetailsUrls);
+    listOfPokemonObjects = await FetchPokemonDetails(listOfPokemonDetailsUrls);
   } catch (error) {
     console.error("Error fetching Pokémon data:", error);
   }
 }
 
 // Fetch detailed Pokémon information
-async function fetchPokemonDetails(urls) {
+async function FetchPokemonDetails(urls) {
   const pokemonObjects = [];
 
   // I had to do bit of a research and found out that I had to use for... of loop instead of for each loop
@@ -283,7 +304,7 @@ async function fetchPokemonDetails(urls) {
         throw new Error(`Failed to fetch ${url} - Status: ${response.status}`);
 
       const pokemonData = await response.json();
-      const pokemon = await processPokemonData(pokemonData);
+      const pokemon = await ProcessPokemonData(pokemonData);
 
       // push complete pokemon object to the list
       pokemonObjects.push(pokemon);
@@ -292,76 +313,98 @@ async function fetchPokemonDetails(urls) {
     }
   }
 
+  console.log(pokemonObjects);
+
   return pokemonObjects;
 }
 
 // Process individual Pokemon data
-async function processPokemonData(pokemonData) {
-  const pokemonName = pokemonData.name;
-
-  const abilities = pokemonData.abilities.map((a) => a.ability);
-  // at this point the following is stored in the abilities variable :
-  /*
-    "ability": {
-        "name": "overgrow",
-        "url": "https://pokeapi.co/api/v2/ability/65/"
-    },
-    "ability": 
-    {
-        "name": "chlorophyll",
-        "url": "https://pokeapi.co/api/v2/ability/34/"
-    },
-  */
-  // this helps me to easily retrieve both name and url properties later on
-
+async function ProcessPokemonData(pokemonData) {
+  let fetchPokemon = true;
+  // Fetching types as first parameter, because if the types do not match our filters we do not care about the pokemon
   const types = pokemonData.types.map((t) => t.type.name);
 
-  // original types structure :
+  // we only check the fisrt type (primary)
+  const primaryType = types[0];
 
-  // - for each type (t) we access the type property and finally the name property, which we retrieve
+  if (selectedTypes.length > 0) {
+    // we do not use .find() as it returns element, we only want true/false
+    if (selectedTypes.includes(primaryType)) {
+      // we want to display this pokemon
+      fetchPokemon = true;
+    } else {
+      // we do not want to display this pokemon
+      fetchPokemon = false;
+    }
+  }
 
-  /*"types": [
-        {
-            "slot": 1,
-            "type": {
-                "name": "grass",
-                "url": "https://pokeapi.co/api/v2/type/12/"
-            }
-        },
-        {
-            "slot": 2,
-            "type": {
-                "name": "poison",
-                "url": "https://pokeapi.co/api/v2/type/4/"
-            }
-        }
-    ],
-  */
+  if (fetchPokemon) {
+    const pokemonName = pokemonData.name;
 
-  const locationURL = pokemonData.location_area_encounters;
+    const abilities = pokemonData.abilities.map((a) => a.ability);
+    // at this point the following is stored in the abilities variable :
+    /*
+      "ability": {
+          "name": "overgrow",
+          "url": "https://pokeapi.co/api/v2/ability/65/"
+      },
+      "ability": 
+      {
+          "name": "chlorophyll",
+          "url": "https://pokeapi.co/api/v2/ability/34/"
+      },
+    */
+    // this helps me to easily retrieve both name and url properties later on
 
-  const abilityDescriptions = await fetchAbilityDetails(
-    // as input parameter we pass the list of urls of abilities
-    // as mentioned previously, we can easily access the url property
-    abilities.map((ability) => ability.url)
-  );
+    // original types structure :
 
-  const locationNames = await fetchLocationNames(locationURL);
+    // - for each type (t) we access the type property and finally the name property, which we retrieve
 
-  return {
-    name: pokemonName,
-    abilitiesNames: abilities.map((a) => a.name),
-    abilitiesShortDescriptions: abilityDescriptions,
-    typesNames: types,
-    locationNames,
-  };
+    /*"types": [
+          {
+              "slot": 1,
+              "type": {
+                  "name": "grass",
+                  "url": "https://pokeapi.co/api/v2/type/12/"
+              }
+          },
+          {
+              "slot": 2,
+              "type": {
+                  "name": "poison",
+                  "url": "https://pokeapi.co/api/v2/type/4/"
+              }
+          }
+      ],
+    */
+
+    const locationURL = pokemonData.location_area_encounters;
+
+    const abilityDescriptions = await FetchAbilityDetails(
+      // as input parameter we pass the list of urls of abilities
+      // as mentioned previously, we can easily access the url property
+      abilities.map((ability) => ability.url)
+    );
+
+    const locationNames = await FetchLocationNames(locationURL);
+
+    return {
+      name: pokemonName,
+      abilitiesNames: abilities.map((a) => a.name),
+      abilitiesShortDescriptions: abilityDescriptions,
+      typesNames: types,
+      locationNames,
+    };
+  } else {
+    return null; // if we do not want to fetch the pokemon, return null
+  }
 }
 
 // Fetch ability descriptions in English
 // I noticed that some abilities description JSONs have different order of languages
 // some have the de (deutsche) as first and en (english) as second and also other way around
 // hence I can not just access [0] or [1] element as it may result into inconsistency of output (different languages)
-async function fetchAbilityDetails(urls) {
+async function FetchAbilityDetails(urls) {
   const descriptions = [];
 
   for (const url of urls) {
@@ -387,7 +430,7 @@ async function fetchAbilityDetails(urls) {
 }
 
 // Fetch Pokemon encounter locations
-async function fetchLocationNames(url) {
+async function FetchLocationNames(url) {
   try {
     const response = await fetch(url);
     if (!response.ok)
