@@ -35,6 +35,7 @@ const limit = 300;
 const POKEMON_URI = `https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${limit}`;
 let listOfPokemonDetailsUrls = []; // global variable
 let listOfPokemonObjects = []; // global variable
+let listOfTypesFilters = [];
 
 const app = document.getElementById("mainDiv");
 const container = document.createElement("div");
@@ -46,21 +47,30 @@ app.appendChild(container);
 // Once the content is loaded fire the fetchPokemonData function
 // async function as I have to wait to fetch data and only then display cards
 document.addEventListener("DOMContentLoaded", async () => {
-  showLoadingSpinner(app);
-
   try {
     await DisplayLogo();
 
     await DisplayInputFields();
 
-    await FetchPokemonData();
+    document.getElementById("filterBtn").addEventListener(
+      "click",
+      async () => {
+        try {
+          showLoadingSpinner(app);
 
-    // the cards (DOM elements) are creared in the memory
-    // once we fetch all the data only then JS updates the DOM
-    await DisplayPokemonCard();
-  } finally {
-    // Hide loading spinner once content is loaded
-    hideLoadingSpinner();
+          await FetchPokemonData();
+          // the cards (DOM elements) are creared in the memory
+          // once we fetch all the data only then JS updates the DOM
+          await DisplayPokemonCard();
+        } finally {
+          // Hide loading spinner once content is loaded
+          hideLoadingSpinner();
+        }
+      },
+      false
+    );
+  } catch (error) {
+    console.error("Error fetching Pokémon data:", error);
   }
 });
 
@@ -95,6 +105,10 @@ function DisplayLogo() {
 function DisplayInputFields() {
   const container = document.getElementById("inputContainer");
 
+  const wrappersContainer = document.createElement("div");
+  wrappersContainer.classList.add("wrappersContainer");
+
+  // use for...of loop with the map object of typeGradients
   for (const [key, gradient] of Object.entries(typeGradients)) {
     const wrapper = document.createElement("div");
     wrapper.classList.add("wrapper");
@@ -120,8 +134,23 @@ function DisplayInputFields() {
     wrapper.appendChild(label);
 
     // Append wrapper to the inputContainer (container)
-    container.appendChild(wrapper);
+    wrappersContainer.appendChild(wrapper);
   }
+
+  container.appendChild(wrappersContainer);
+
+  // Create button, when clicked, it will get all the filtered types
+  const btn = document.createElement("button");
+  btn.id = "filterBtn";
+  btn.type = "button";
+  btn.style.cursor = "pointer";
+  btn.textContent = "Start fetching data";
+  btn.style.padding = "20px";
+  btn.style.borderRadius = "8px";
+  btn.style.color = "white";
+  btn.style.backgroundColor = "grey";
+
+  container.appendChild(btn);
 }
 
 function DisplayPokemonCard() {

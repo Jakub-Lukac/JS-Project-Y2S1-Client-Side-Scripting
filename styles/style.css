@@ -101,10 +101,16 @@ p {
   /* background color from js script*/
 }
 
-#inputContainer {
+.wrappersContainer {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 40px;
+  margin: 2rem auto;
+  padding: 0 80px;
+}
+
+#filterBtn {
+  display: block;
   margin: 2rem auto;
 }
