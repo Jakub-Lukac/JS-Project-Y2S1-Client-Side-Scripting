@@ -33,7 +33,7 @@ export const API_FILTERS = {
 //                                        FILTERS - GET USER INPUT (CHECKBOXES)
 /*******************************************************************************************************************/
 
-export async function GetFilters() {
+export async function GetSelectedTypes() {
   let selectedTypes = [];
   const checkboxes = document.querySelectorAll('input[type="checkbox"]');
   for (let i = 0; i < checkboxes.length; i++) {
@@ -45,4 +45,11 @@ export async function GetFilters() {
   console.log(selectedTypes);
 
   return selectedTypes;
+}
+
+export async function GetSelectedWeight() {
+  const dropdown = document.getElementById("weights");
+  const selectedValue = dropdown.value; // Gets the value of the selected option
+  console.log(`Selected weight class: ${selectedValue}`); // Logs the selected value
+  return selectedValue;
 }

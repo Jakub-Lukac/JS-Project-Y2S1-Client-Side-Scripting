@@ -136,3 +136,44 @@ p {
   box-shadow: 2px 8px 45px rgba(0, 0, 0, 0.15);
   transform: translate3D(0, -2px, 0);
 }
+
+#weights {
+  background: linear-gradient(
+    45deg,
+    #ffcc00,
+    #ffff99
+  ); /* Pikachu-inspired yellow */
+  border: 2px solid #0075be; /* Pokéball-inspired blue */
+  border-radius: 8px;
+  color: #000;
+  font-family: "Arial", sans-serif;
+  font-size: 16px;
+  padding: 8px 12px;
+  outline: none;
+  cursor: pointer;
+}
+
+#weights option {
+  background-color: #fff;
+  color: #000;
+}
+
+label[for="weights"] {
+  font-family: "Arial", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0075be;
+  margin-right: 8px;
+}
+
+.dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+#weights:hover {
+  box-shadow: 0 0 20px rgba(255, 223, 0, 0.75); /* Glow effect */
+}

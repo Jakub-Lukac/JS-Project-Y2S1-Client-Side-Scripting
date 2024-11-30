@@ -1,4 +1,4 @@
-import { GetFilters } from "./filters.js";
+import { GetSelectedTypes, GetSelectedWeight } from "./filters.js";
 
 import {
   showLoadingSpinner,
@@ -13,9 +13,11 @@ import { FetchPokemonData } from "./api.js";
 /*******************************************************************************************************************/
 //                                        VARIABLES AND ELEMENETS DECLARATION
 /*******************************************************************************************************************/
-export let selectedTypes = []; // global variable
+export let selectedTypes = [];
 
-export let listOfPokemonObjects = []; // global variable
+export let selectedWeightClass = "";
+
+export let listOfPokemonObjects = [];
 
 const app = document.getElementById("mainDiv");
 const container = document.createElement("div");
@@ -47,7 +49,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           showLoadingSpinner();
 
           // get the filter from user input (checkboxes), only then start fetching data
-          selectedTypes = await GetFilters();
+          selectedTypes = await GetSelectedTypes();
+
+          selectedWeightClass = await GetSelectedWeight();
 
           listOfPokemonObjects = await FetchPokemonData();
           // the cards (DOM elements) are creared in the memory

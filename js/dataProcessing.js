@@ -1,4 +1,4 @@
-import { selectedTypes } from "./app.js";
+import { selectedTypes, selectedWeightClass } from "./app.js";
 
 // Process individual Pokemon data
 export async function ProcessPokemonData(pokemonData) {

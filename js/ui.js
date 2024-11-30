@@ -69,7 +69,7 @@ export function DisplayInputFields() {
     label.style.backgroundImage = gradient;
 
     // Append the checkbox button and label to the wrapper
-    wrapper.appendChild(checkBox);
+    label.appendChild(checkBox);
     wrapper.appendChild(label);
 
     // Append wrapper to the inputContainer (container)
@@ -80,9 +80,37 @@ export function DisplayInputFields() {
 
   // Dropdown for weight of pokemon
 
-  // 0-100
-  // 100-500
-  // 500 and more
+  const dropDownWrapper = document.createElement("div");
+  dropDownWrapper.classList.add("dropdown-wrapper");
+
+  const dropDownLabel = document.createElement("label");
+  dropDownLabel.htmlFor = "weights";
+  dropDownLabel.textContent = "Choose weight class of Pokémon:";
+
+  const dropDownSelect = document.createElement("select");
+  dropDownSelect.name = "weights";
+  dropDownSelect.id = "weights";
+
+  const allWeights = document.createElement("option");
+  allWeights.value = "all";
+  allWeights.textContent = "All Weights";
+
+  const lightWeight = document.createElement("option");
+  lightWeight.value = "0-100";
+  lightWeight.textContent = "0-100";
+
+  const middleWeight = document.createElement("option");
+  middleWeight.value = "100-500";
+  middleWeight.textContent = "100-500";
+
+  const heavyWeight = document.createElement("option");
+  heavyWeight.value = "500+";
+  heavyWeight.textContent = "500+";
+
+  dropDownSelect.append(allWeights, lightWeight, middleWeight, heavyWeight);
+  dropDownWrapper.append(dropDownLabel, dropDownSelect);
+
+  container.append(dropDownWrapper);
 
   // Create button, when clicked, it will get all the filtered types
   const btn = document.createElement("button");
