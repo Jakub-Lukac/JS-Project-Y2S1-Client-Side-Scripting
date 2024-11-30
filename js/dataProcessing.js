@@ -6,7 +6,7 @@ export async function ProcessPokemonData(pokemonData) {
   const primaryType = types[0];
   const weight = pokemonData.weight;
 
-  const typeMatches =
+  const typeMatches =p
     selectedTypes.length === 0 || selectedTypes.includes(primaryType);
 
   // if the selectedTypes.length === 0 (no filters) - true

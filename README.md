@@ -83,7 +83,8 @@ This project is a **JavaScript-based web application that fetches Pokémon data 
       - Processing Pokémon Data:
 
         - Filters Pokémon based on the user-selected types (selectedTypes from app.js).
-        - Extracts and structures data such as Pokémon names, abilities, types, and encounter locations.
+        - Filters Pokemon based on the user-selected weight class (selectedWeightClass from app.js)
+        - Extracts and structures data such as Pokémon names, abilities, types, encounter locations and weight.
 
       - Fetching Additional Data:
 
