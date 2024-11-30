@@ -23,6 +23,8 @@ export async function ProcessPokemonData(pokemonData) {
   if (fetchPokemon) {
     const pokemonName = pokemonData.name;
 
+    const weight = pokemonData.weight;
+
     const abilities = pokemonData.abilities.map((a) => a.ability);
     // at this point the following is stored in the abilities variable :
     /*
@@ -75,7 +77,8 @@ export async function ProcessPokemonData(pokemonData) {
       abilitiesNames: abilities.map((a) => a.name),
       abilitiesShortDescriptions: abilityDescriptions,
       typesNames: types,
-      locationNames,
+      locationNames: locationNames,
+      weight: weight,
     };
   } else {
     return null; // if we do not want to fetch the pokemon, return null

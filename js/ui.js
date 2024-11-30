@@ -41,6 +41,7 @@ export function DisplayLogo() {
 }
 
 export function DisplayInputFields() {
+  // CHECKBOXES
   const container = document.getElementById("inputContainer");
 
   const wrappersContainer = document.createElement("div");
@@ -76,6 +77,12 @@ export function DisplayInputFields() {
   }
 
   container.appendChild(wrappersContainer);
+
+  // Dropdown for weight of pokemon
+
+  // 0-100
+  // 100-500
+  // 500 and more
 
   // Create button, when clicked, it will get all the filtered types
   const btn = document.createElement("button");
@@ -184,10 +191,27 @@ export function DisplayPokemonCard() {
     encounterLocations.append(locationsStaticText);
     encounterLocations.appendChild(locationsDynamicText);
 
+    /************************************************************************/
+    //                               WEIGHT
+    /************************************************************************/
+
+    const weight = document.createElement("p");
+    const weightStaticText = document.createElement("span");
+    weightStaticText.textContent = "Weight : ";
+    weightStaticText.classList.add("static-text");
+
+    const weightDynamicText = document.createElement("spna");
+    weightDynamicText.textContent = pokemon.weight;
+    weightDynamicText.classList.add("dynamic-text");
+
+    weight.appendChild(weightStaticText);
+    weight.appendChild(weightDynamicText);
+
     container.appendChild(card);
     card.appendChild(h1);
     card.appendChild(abilitiesAndDescription);
     card.appendChild(types);
     card.appendChild(encounterLocations);
+    card.appendChild(weight);
   });
 }

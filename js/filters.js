@@ -23,7 +23,7 @@ export const typeGradients = {
 
 export const API_FILTERS = {
   offset: 0,
-  limit: 500,
+  limit: 50,
 };
 
 //export const offset = 0;
