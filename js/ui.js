@@ -68,7 +68,7 @@ export function DisplayInputFields() {
     label.textContent = key.charAt(0).toUpperCase() + key.slice(1);
     label.style.backgroundImage = gradient;
 
-    // Append the checkbox button and label to the wrapper
+    // Appending checkbox to label and label to wrapper
     label.appendChild(checkBox);
     wrapper.appendChild(label);
 

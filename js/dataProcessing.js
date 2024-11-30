@@ -2,32 +2,64 @@ import { selectedTypes, selectedWeightClass } from "./app.js";
 
 // Process individual Pokemon data
 export async function ProcessPokemonData(pokemonData) {
-  let fetchPokemon = true;
-  // Fetching types as first parameter, because if the types do not match our filters we do not care about the pokemon
   const types = pokemonData.types.map((t) => t.type.name);
-
-  // we only check the fisrt type (primary)
   const primaryType = types[0];
+  const weight = pokemonData.weight;
 
-  if (selectedTypes.length > 0) {
-    // we do not use .find() as it returns element, we only want true/false
-    if (selectedTypes.includes(primaryType)) {
-      // we want to display this pokemon
-      fetchPokemon = true;
-    } else {
-      // we do not want to display this pokemon
-      fetchPokemon = false;
-    }
+  const typeMatches =
+    selectedTypes.length === 0 || selectedTypes.includes(primaryType);
+
+  // if the selectedTypes.length === 0 (no filters) - true
+  // then selectedTypes.includes(primaryType) - false
+  // overall - true
+  // if (!typeMatches... - !typeMatches = false, hence we wont skip the pokemon
+
+  // if the selectedTypes.length === 0 (we have filters) - false
+  // then we have some filters (THEY DONT MATCH FOR INSTANCE)
+  // then selectedTypes.includes(primaryType) - false
+  // overall - false
+  // if (!typeMatches... - !typeMatches = true, hence WE SKIP the pokemon
+
+  // if the selectedTypes.length === 0 (we have filters) - false
+  // then we have some filters (THEY DO MATCH FOR INSTANCE)
+  // then selectedTypes.includes(primaryType) - true
+  // overall - true
+  // if (!typeMatches... - !typeMatches = false, hence we wont skip the pokemon
+
+  const weightMatches =
+    selectedWeightClass === "all" ||
+    (selectedWeightClass === "0-100" && weight > 0 && weight < 100) ||
+    (selectedWeightClass === "100-500" && weight >= 100 && weight < 500) ||
+    (selectedWeightClass === "500+" && weight >= 500);
+
+  if (!typeMatches || !weightMatches) {
+    return null; // Skip Pokemon that does not match filters
   }
 
-  if (fetchPokemon) {
-    const pokemonName = pokemonData.name;
+  // if the selectedWeightClass === "all" - true
+  // all the other ones are - false
+  // overall - true
+  // if (!weightMatches... - !weightMatches = false, hence we wont skip the pokemon
 
-    const weight = pokemonData.weight;
+  // if the selectedWeightClass === "0-100" and the pokemon weight is within range - true
+  // all the other ones are - false
+  // overall - true
+  // if (!weightMatches... - !weightMatches = false, hence we wont skip the pokemon
 
-    const abilities = pokemonData.abilities.map((a) => a.ability);
-    // at this point the following is stored in the abilities variable :
-    /*
+  // if the selectedWeightClass === "0-100" and the pokemon weight is NOT within range - false
+  // all the other ones are - false
+  // overall - false
+  // if (!weightMatches... - !weightMatches = true, hence we skip the pokemon
+
+  // ************************************************************
+  // THE SAME APPROACH APPLIES TO THE REMAINING CASES AS WELL
+  // ************************************************************
+
+  const pokemonName = pokemonData.name;
+
+  const abilities = pokemonData.abilities.map((a) => a.ability);
+  // at this point the following is stored in the abilities variable :
+  /*
         "ability": {
             "name": "overgrow",
             "url": "https://pokeapi.co/api/v2/ability/65/"
@@ -38,13 +70,13 @@ export async function ProcessPokemonData(pokemonData) {
             "url": "https://pokeapi.co/api/v2/ability/34/"
         },
       */
-    // this helps me to easily retrieve both name and url properties later on
+  // this helps me to easily retrieve both name and url properties later on
 
-    // original types structure :
+  // original types structure :
 
-    // - for each type (t) we access the type property and finally the name property, which we retrieve
+  // - for each type (t) we access the type property and finally the name property, which we retrieve
 
-    /*"types": [
+  /*"types": [
             {
                 "slot": 1,
                 "type": {
@@ -61,28 +93,22 @@ export async function ProcessPokemonData(pokemonData) {
             }
         ],
       */
+  const locationURL = pokemonData.location_area_encounters;
 
-    const locationURL = pokemonData.location_area_encounters;
+  // Fetch additional details
+  const abilityDescriptions = await FetchAbilityDetails(
+    abilities.map((ability) => ability.url)
+  );
+  const locationNames = await FetchLocationNames(locationURL);
 
-    const abilityDescriptions = await FetchAbilityDetails(
-      // as input parameter we pass the list of urls of abilities
-      // as mentioned previously, we can easily access the url property
-      abilities.map((ability) => ability.url)
-    );
-
-    const locationNames = await FetchLocationNames(locationURL);
-
-    return {
-      name: pokemonName,
-      abilitiesNames: abilities.map((a) => a.name),
-      abilitiesShortDescriptions: abilityDescriptions,
-      typesNames: types,
-      locationNames: locationNames,
-      weight: weight,
-    };
-  } else {
-    return null; // if we do not want to fetch the pokemon, return null
-  }
+  return {
+    name: pokemonName,
+    abilitiesNames: abilities.map((a) => a.name),
+    abilitiesShortDescriptions: abilityDescriptions,
+    typesNames: types,
+    locationNames: locationNames,
+    weight: weight,
+  };
 }
 
 // Fetch ability descriptions in English
